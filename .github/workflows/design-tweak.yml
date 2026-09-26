@@ -42,7 +42,7 @@ jobs:
 
           # Remove the old boxed experience strip so the experience text appears only once.
           html, n2 = re.subn(
-              r'\s*<div class="experience-strip reveal from-right interact-card" data-fx="experience">.*?</div>\s*',
+              r'\s*<div class="experience-strip reveal from-right interact-card" data-fx="experience">.*?</div>\s*</div>\s*',
               "\n",
               html,
               count=1,
