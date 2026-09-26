@@ -42,7 +42,7 @@ jobs:
 
           # Remove the old boxed experience strip so the experience text appears only once.
           html, n2 = re.subn(
-              r'<div class="experience-strip[^>]*>.*?cybersecurity\\.</span></div>',
+              r'<div class="experience-strip[^>]*>.*?cybersecurity\.</span></div>',
               "",
               html,
               count=1,
