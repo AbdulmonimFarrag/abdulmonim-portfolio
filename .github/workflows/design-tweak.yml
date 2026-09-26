@@ -33,6 +33,7 @@ jobs:
           # Replace the top skill pills with the existing experience content, but without the card/box styling.
           skill_open = '<div class="skill-strip" aria-label="Core skills">'
           skill_start = html.find(skill_open)
+          print("skill-strip count:", html.count("skill-strip"), "start:", skill_start)
           assert skill_start >= 0, "Top skill strip was not found"
           skill_end = html.find('</div>', skill_start) + len('</div>')
           assert skill_end > len('</div>'), "Top skill strip closing tag was not found"
