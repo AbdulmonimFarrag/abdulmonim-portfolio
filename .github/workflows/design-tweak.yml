@@ -31,14 +31,12 @@ jobs:
           )
 
           # Replace the top skill pills with the existing experience content, but without the card/box styling.
-          html, n1 = re.subn(
-              r'<div class="skill-strip" aria-label="Core skills">.*?</div>\s*',
-              replacement + "\n",
-              html,
-              count=1,
-              flags=re.S,
-          )
-          assert n1 == 1, "Top skill strip was not found"
+          skill_open = '<div class="skill-strip" aria-label="Core skills">'
+          skill_start = html.find(skill_open)
+          assert skill_start >= 0, "Top skill strip was not found"
+          skill_end = html.find('</div>', skill_start) + len('</div>')
+          assert skill_end > len('</div>'), "Top skill strip closing tag was not found"
+          html = html[:skill_start] + replacement + html[skill_end:]
 
           # Hide the old boxed experience strip so the experience text appears only once.
           old_exp_open = '<div class="experience-strip reveal from-right interact-card" data-fx="experience">'
