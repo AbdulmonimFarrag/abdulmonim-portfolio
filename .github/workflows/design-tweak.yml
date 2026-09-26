@@ -1,0 +1,113 @@
+name: Apply portfolio design tweak
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  tweak:
+    if: !contains(github.event.head_commit.message, '[skip ci]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update design
+        run: |
+          python - <<'PY'
+          from bs4 import BeautifulSoup, NavigableString
+
+          path = "index.html"
+          html = open(path, "r", encoding="utf-8").read()
+          soup = BeautifulSoup(html, "html.parser")
+
+          experience = "2+ Years of continuous learning, hands-on projects, and growing experience across software engineering, data analysis, and cybersecurity."
+          skills = ["C++", "Python", "SQL", "Pandas", "NumPy", "Data Visualization", "Linux", "Networking"]
+
+          # Make the existing experience text plain/unboxed while preserving its text and location.
+          target = None
+          for node in soup.find_all(string=lambda s: s and "Years of continuous learning" in s):
+              target = node.parent
+              break
+
+          if target:
+              box = target
+              for _ in range(6):
+                  if not box.parent or box.parent.name in ("body", "html"):
+                      break
+                  attrs = " ".join(box.get("class", [])) + " " + (box.get("style") or "")
+                  if any(k in attrs.lower() for k in ["border", "background", "box-shadow", "card", "glass", "stat", "metric"]):
+                      break
+                  box = box.parent
+
+              style = box.get("style", "")
+              for prop in ["background", "background-color", "border", "border-width", "border-style", "box-shadow", "border-radius"]:
+                  import re
+                  style = re.sub(rf"(?i)(?:^|;)\\s*{re.escape(prop)}\\s*:[^;]*;?", "", style)
+              style = style.strip(" ;")
+              style += ("; " if style else "") + "background: transparent !important; border: none !important; box-shadow: none !important; border-radius: 0 !important;"
+              box["style"] = style
+
+              # Remove any obvious visual wrapper classes that create the box, without touching layout classes.
+              classes = box.get("class", [])
+              box["class"] = [c for c in classes if not any(k in c.lower() for k in ["card", "glass", "boxed"])]
+
+          # Remove the skill chips from the skills display area.
+          skill_nodes = []
+          for s in skills:
+              for node in soup.find_all(string=lambda x, s=s: x and x.strip() == s):
+                  skill_nodes.append(node.parent)
+
+          if skill_nodes:
+              # Find a common container that contains most/all skill labels.
+              container = None
+              for node in skill_nodes:
+                  cur = node
+                  for _ in range(6):
+                      if not cur.parent or cur.parent.name in ("body", "html"):
+                          break
+                      cur = cur.parent
+                      count = sum(1 for s in skills if cur.find(string=lambda x, s=s: x and x.strip() == s))
+                      if count >= 5:
+                          container = cur
+                          break
+                  if container:
+                      break
+
+              if container:
+                  # Remove each individual chip, not the whole surrounding section.
+                  for node in list(container.find_all(True)):
+                      txt = node.get_text(" ", strip=True)
+                      if txt in skills and not node.find(True):
+                          node.decompose()
+
+                  # Remove empty wrappers left by the chips.
+                  changed = True
+                  while changed:
+                      changed = False
+                      for el in list(container.find_all(True)):
+                          if not el.get_text(strip=True) and not el.find("img"):
+                              el.decompose()
+                              changed = True
+
+          open(path, "w", encoding="utf-8").write(str(soup))
+
+          # Safety checks: don't commit if the requested text disappeared.
+          result = open(path, "r", encoding="utf-8").read()
+          assert "Years of continuous learning" in result
+          assert not all(s in result for s in skills), "Skill labels unexpectedly still all present"
+          PY
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No changes needed"
+          else
+            git commit -m "Tweak experience and skills design [skip ci]"
+            git push
+          fi
