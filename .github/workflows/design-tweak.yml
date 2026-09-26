@@ -40,29 +40,20 @@ jobs:
           )
           assert n1 == 1, "Top skill strip was not found"
 
-          # Remove the old boxed experience strip so the experience text appears only once.
-          html, n2 = re.subn(
-              r'<div class="experience-strip[^>]*>.*?cybersecurity\.</span></div>',
-              "",
-              html,
-              count=1,
-              flags=re.S,
-          )
-          assert n2 == 1, "Old experience strip was not found"
+          # Hide the old boxed experience strip so the experience text appears only once.
+          old_exp_open = '<div class="experience-strip reveal from-right interact-card" data-fx="experience">'
+          new_exp_open = '<div class="experience-strip reveal from-right interact-card" data-fx="experience" style="display:none!important">'
+          assert old_exp_open in html, "Old experience strip was not found"
+          html = html.replace(old_exp_open, new_exp_open, 1)
 
-          # Remove the lower Skills section completely, including its skill panels/tags.
-          html, n3 = re.subn(
-              r'\s*<section id="skills">.*?</section>\s*',
-              "\n\n",
-              html,
-              count=1,
-              flags=re.S,
-          )
-          assert n3 == 1, "Skills section was not found"
+          # Hide the lower Skills section, including all of its skill panels/tags.
+          old_skills_open = '<section id="skills">'
+          new_skills_open = '<section id="skills" style="display:none!important">'
+          assert old_skills_open in html, "Skills section was not found"
+          html = html.replace(old_skills_open, new_skills_open, 1)
 
           assert "2+ Years of continuous learning" in html
           assert 'class="skill-strip"' not in html
-          assert 'id="skills"' not in html
 
           open(path, "w", encoding="utf-8").write(html)
           PY
