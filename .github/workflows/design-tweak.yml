@@ -42,7 +42,7 @@ jobs:
           html = html[:skill_start] + replacement + html[skill_end:]
 
           # Hide the old boxed experience strip; the new inline experience above is the only visible version.
-          w_experience = re.sub(
+          html = re.sub(
               r'<div class="experience-strip[^>]*>',
               '<div class="experience-strip" style="display:none!important">',
               html,
