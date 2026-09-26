@@ -14,20 +14,57 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Inspect target markup
+      - name: Update design
         run: |
           python - <<'PY'
           import re
-          html = open("index.html", encoding="utf-8").read()
-          terms = [
-              "Years of continuous learning", "C++", "Python", "SQL",
-              "Pandas", "NumPy", "Data Visualization", "Linux", "Networking"
-          ]
-          for term in terms:
-              print("\n=== "+term+" ===")
-              for m in list(re.finditer(re.escape(term), html, re.I))[:5]:
-                  a=max(0,m.start()-700); b=min(len(html),m.end()+900)
-                  print(html[a:b])
+
+          path = "index.html"
+          html = open(path, encoding="utf-8").read()
+
+          experience = "Years of continuous learning, hands-on projects, and growing experience across software engineering, data analysis, and cybersecurity."
+          replacement = (
+              '<div class="experience-strip reveal from-right interact-card" data-fx="experience" '
+              'style="background:transparent!important;border:none!important;box-shadow:none!important;'
+              'border-radius:0!important;padding:0!important;">'
+              '<div class="experience-number">2+</div><span>' + experience + '</span></div>'
+          )
+
+          # Replace the top skill pills with the existing experience content, but without the card/box styling.
+          html, n1 = re.subn(
+              r'<div class="skill-strip" aria-label="Core skills">.*?</div>\\s*',
+              replacement + "\n",
+              html,
+              count=1,
+              flags=re.S,
+          )
+          assert n1 == 1, "Top skill strip was not found"
+
+          # Remove the old boxed experience strip so the experience text appears only once.
+          html, n2 = re.subn(
+              r'\\s*<div class="experience-strip reveal from-right interact-card" data-fx="experience">.*?</div>\\s*',
+              "\n",
+              html,
+              count=1,
+              flags=re.S,
+          )
+          assert n2 == 1, "Old experience strip was not found"
+
+          # Remove the lower Skills section completely, including its skill panels/tags.
+          html, n3 = re.subn(
+              r'\\s*<section id="skills">.*?</section>\\s*',
+              "\n\n",
+              html,
+              count=1,
+              flags=re.S,
+          )
+          assert n3 == 1, "Skills section was not found"
+
+          assert "2+ Years of continuous learning" in html
+          assert 'class="skill-strip"' not in html
+          assert 'id="skills"' not in html
+
+          open(path, "w", encoding="utf-8").write(html)
           PY
 
       - name: Commit changes
@@ -38,6 +75,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes needed"
           else
-            git commit -m "Tweak experience and skills design [skip ci]"
+            git commit -m "Move experience into hero and remove skills section [skip ci]"
             git push
           fi
