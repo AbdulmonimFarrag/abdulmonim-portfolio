@@ -35,6 +35,7 @@ jobs:
           skill_start = html.find(skill_open)
           print("skill-strip count:", html.count("skill-strip"), "start:", skill_start)
           assert skill_start >= 0, "Top skill strip was not found"
+          print("skill snippet:", repr(html[skill_start:skill_start+1800]))
           skill_end = html.find('</div>', skill_start) + len('</div>')
           assert skill_end > len('</div>'), "Top skill strip closing tag was not found"
           html = html[:skill_start] + replacement + html[skill_end:]
