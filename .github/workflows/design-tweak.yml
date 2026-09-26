@@ -41,9 +41,14 @@ jobs:
           assert n1 == 1, "Top skill strip was not found"
 
           # Remove the old boxed experience strip so the experience text appears only once.
-          old_experience = '<div class="experience-strip reveal from-right interact-card" data-fx="experience"><div class="experience-number">2+</div><span>' + experience + '</span></div>'
-          assert old_experience in html, "Old experience strip was not found"
-          html = html.replace(old_experience, "", 1)
+          html, n2 = re.subn(
+              r'<div class="experience-strip[^>]*>.*?cybersecurity\\.</span></div>',
+              "",
+              html,
+              count=1,
+              flags=re.S,
+          )
+          assert n2 == 1, "Old experience strip was not found"
 
           # Remove the lower Skills section completely, including its skill panels/tags.
           html, n3 = re.subn(
