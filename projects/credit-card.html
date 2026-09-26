@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Credit Card Validator | Abdulmonim Farrag</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f8fafc;--surface:#fff;--surface2:#f1f5f9;--text:#0f172a;--muted:#475569;--accent:#2563eb;--border:#e2e8f0;--shadow:0 12px 35px rgba(15,23,42,.08)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}.wrap{width:min(1000px,calc(100% - 30px));margin:auto;padding:34px 0 60px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}h1{font-size:clamp(1.8rem,4vw,3rem);line-height:1.1;letter-spacing:-.04em;margin:0 0 8px}h2{font-size:1.15rem}p{color:var(--muted);line-height:1.65}.btn{padding:10px 14px;border:1px solid var(--border);border-radius:9px;background:var(--surface);font-weight:700;color:var(--text);text-decoration:none;cursor:pointer}.primary{background:var(--accent);color:#fff;border-color:var(--accent)}.panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:26px;margin-top:22px}.form-grid{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}label{display:block;font-weight:700;margin-bottom:8px}input{width:100%;padding:13px;border:1px solid var(--border);border-radius:10px;font:inherit;outline:none}input:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(37,99,235,.1)}.result{margin-top:16px;padding:16px;border:1px solid var(--border);background:var(--surface2);border-radius:10px;min-height:54px}.good{color:#166534;font-weight:800}.bad{color:#991b1b;font-weight:800}.muted{font-size:.85rem;color:var(--muted)}.code-wrap{margin-top:24px;background:#0b1220;border:1px solid #243247;border-radius:14px;overflow:auto;box-shadow:0 14px 40px rgba(0,0,0,.16)}.code-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 15px;background:#111827;border-bottom:1px solid #243247;color:#b6c2d1;font-size:.85rem}pre{margin:0;padding:18px;color:#e5e7eb;font:500 .88rem/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:4;white-space:pre;min-width:max-content}@media(max-width:700px){.top,.form-grid{flex-direction:column;display:flex;align-items:stretch}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <div style="color:var(--accent);font-weight:800;font-size:.85rem">SOFTWARE DEVELOPMENT • C++</div>
+      <h1>Credit Card Validator &amp; Type Detector</h1>
+      <p>A web preview that follows the supplied C++ program's input cleaning, numeric validation, checksum logic, and supported card-type detection.</p>
+    </div>
+    <a class="btn" href="../index.html">← Portfolio</a>
+  </div>
+
+  <div class="panel">
+    <h2>Project Preview</h2>
+    <div class="form-grid">
+      <div>
+        <label for="card">Credit card number</label>
+        <input id="card" inputmode="numeric" autocomplete="off" placeholder="Enter the number used for testing">
+      </div>
+      <button class="btn primary" onclick="check()">Check Card</button>
+    </div>
+    <div id="result" class="result">Enter a number and press <strong>Check Card</strong>.</div>
+    <p class="muted">This is only a browser preview. It does not contact banks, verify a real account, or perform transactions.</p>
+  </div>
+
+  <div class="panel">
+    <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
+      <div><h2 style="margin-bottom:5px">Original C++ Source</h2><p style="margin-bottom:0">Exact source supplied for this project.</p></div>
+      <a class="btn primary" href="credit_card_validator.cpp" download>Download Source</a>
+    </div>
+    <div class="code-wrap">
+      <div class="code-head"><span>credit_card_validator.cpp</span><span>C++</span></div>
+      <pre>#include &lt;iostream&gt;
+#include &lt;string&gt;
+using namespace std;
+
+int GetDigits(const int number);
+int SumOddNums(const string&amp; cardnumber);
+int SumEvenNums(const string&amp; cardnumber);
+string GetCardType(const string&amp; cardnumber);
+bool IsNumeric(const string&amp; s);
+string RemoveSpaces(const string&amp; input);
+
+int main()
+{
+    string cardnumber;
+
+    cout &lt;&lt; &quot;Enter your credit card number:\n&quot;;
+    getline(cin, cardnumber);
+
+    cardnumber = RemoveSpaces(cardnumber);
+
+    if (cardnumber.empty())
+    {
+        cout &lt;&lt; &quot;Input cannot be empty.\n&quot;;
+        return 1;
+    }
+
+    if (!IsNumeric(cardnumber))
+    {
+        cout &lt;&lt; &quot;Invalid input: card number must contain digits only.\n&quot;;
+        return 1;
+    }
+
+    int result = SumEvenNums(cardnumber) + SumOddNums(cardnumber);
+
+    if (result % 10 == 0)
+    {
+        cout &lt;&lt; &quot;This credit card number is valid\n&quot;;
+        cout &lt;&lt; GetCardType(cardnumber) &lt;&lt; &quot;\n&quot;;
+    }
+    else
+    {
+        cout &lt;&lt; &quot;This credit card number is not valid\n&quot;;
+    }
+
+    return 0;
+}
+
+int GetDigits(const int number)
+{
+    return number % 10 + (number / 10 % 10);
+}
+
+int SumOddNums(const string&amp; cardnumber)
+{
+    int sum = 0;
+    for (int i = cardnumber.size() - 1; i &gt;= 0; i -= 2)
+    {
+        sum += cardnumber[i] - &#x27;0&#x27;;
+    }
+    return sum;
+}
+
+int SumEvenNums(const string&amp; cardnumber)
+{
+    int sum = 0;
+    for (int i = cardnumber.size() - 2; i &gt;= 0; i -= 2)
+    {
+        sum += GetDigits((cardnumber[i] - &#x27;0&#x27;) * 2);
+    }
+    return sum;
+}
+
+string GetCardType(const string&amp; cardnumber)
+{
+    if (cardnumber[0] == &#x27;4&#x27;)
+    {
+        return &quot;This card number is a VISA credit card&quot;;
+    }
+    else if (cardnumber.substr(0, 2) == &quot;34&quot; || cardnumber.substr(0, 2) == &quot;37&quot;)
+    {
+        return &quot;This card number is an American Express credit card&quot;;
+    }
+    else if (cardnumber.substr(0, 2) &gt;= &quot;51&quot; &amp;&amp; cardnumber.substr(0, 2) &lt;= &quot;55&quot;)
+    {
+        return &quot;This card number is a Mastercard credit card&quot;;
+    }
+    else if (cardnumber.substr(0, 4) == &quot;6011&quot;)
+    {
+        return &quot;This card number is a Discover credit card&quot;;
+    }
+    else
+    {
+        return &quot;Unknown credit card type&quot;;
+    }
+}
+
+bool IsNumeric(const string&amp; s)
+{
+    for (char c : s)
+    {
+        if (!isdigit(c))
+            return false;
+    }
+    return true;
+}
+
+string RemoveSpaces(const string&amp; input)
+{
+    string output;
+    for (char c : input)
+    {
+        if (c != &#x27; &#x27;)
+            output += c;
+    }
+    return output;
+}
+</pre>
+    </div>
+  </div>
+</div>
+<script>
+function GetDigits(number) { return number % 10 + Math.floor(number / 10) % 10; }
+function SumOddNums(cardnumber) {
+  let sum=0;
+  for(let i=cardnumber.length-1;i>=0;i-=2) sum += cardnumber.charCodeAt(i)-48;
+  return sum;
+}
+function SumEvenNums(cardnumber) {
+  let sum=0;
+  for(let i=cardnumber.length-2;i>=0;i-=2) sum += GetDigits((cardnumber.charCodeAt(i)-48)*2);
+  return sum;
+}
+function RemoveSpaces(input) { return input.replaceAll(" ",""); }
+function IsNumeric(s) { return /^\d+$/.test(s); }
+function GetCardType(cardnumber) {
+  if(cardnumber[0]==="4") return "This card number is a VISA credit card";
+  if(cardnumber.substring(0,2)==="34" || cardnumber.substring(0,2)==="37") return "This card number is an American Express credit card";
+  if(cardnumber.substring(0,2)>="51" && cardnumber.substring(0,2)<="55") return "This card number is a Mastercard credit card";
+  if(cardnumber.substring(0,4)==="6011") return "This card number is a Discover credit card";
+  return "Unknown credit card type";
+}
+function check() {
+  let cardnumber=RemoveSpaces(document.getElementById("card").value);
+  const result=document.getElementById("result");
+  if(cardnumber.length===0){result.innerHTML='<span class="bad">Input cannot be empty.</span>';return;}
+  if(!IsNumeric(cardnumber)){result.innerHTML='<span class="bad">Invalid input: card number must contain digits only.</span>';return;}
+  const total=SumEvenNums(cardnumber)+SumOddNums(cardnumber);
+  if(total%10===0){
+    result.innerHTML='<span class="good">✓ This credit card number is valid</span><br><br>'+GetCardType(cardnumber);
+  } else {
+    result.innerHTML='<span class="bad">✕ This credit card number is not valid</span>';
+  }
+}
+</script>
+</body>
+</html>
