@@ -200,6 +200,11 @@
     .skills-wrap { display:grid; grid-template-columns:1fr; gap:18px; }
     .skill-panel { padding:24px; border:1px solid var(--border); background:linear-gradient(145deg,rgba(12,20,34,.75),rgba(7,12,22,.52)); border-radius:20px; position:relative; overflow:hidden; transition:transform .35s var(--ease), border-color .35s var(--ease), box-shadow .35s var(--ease); }
     .skill-panel::before { content:""; position:absolute; width:220px; height:150px; border-radius:50%; top:-90px; right:-90px; filter:blur(28px); opacity:.65; }
+    .skill-panel::after { content:""; position:absolute; inset:0; background-repeat:no-repeat; background-position:center; background-size:cover; opacity:.16; pointer-events:none; z-index:0; mix-blend-mode:screen; }
+    .skill-panel.software::after { background-image:url('assets/skills-software.svg'); }
+    .skill-panel.data::after { background-image:url('assets/skills-data.svg'); }
+    .skill-panel.cyber::after { background-image:url('assets/skills-cyber.svg'); }
+
     .skill-panel.software::before { background:var(--glow-blue); }
     .skill-panel.data::before { background:var(--glow-cyan); }
     .skill-panel.cyber::before { background:var(--glow-purple); }
@@ -547,7 +552,7 @@
           <h1>Abdulmonim <span class="name-accent">Farrag</span></h1>
           <div class="role-line"><span class="software">Software Developer</span><span class="sep">•</span><span class="data">Data Analyst</span><span class="sep">•</span><span class="cyber">Cybersecurity Enthusiast</span></div>
           <p class="hero-copy">I like understanding how systems work, turning messy data into clear insight, and writing software that solves real problems — while learning how to make the whole thing more secure.</p>
-          <div class="experience-inline" style="display:flex;align-items:center;gap:14px;margin-top:20px;line-height:1.5;background:transparent!important;border:none!important;box-shadow:none!important;padding:0!important;"><strong style="font-size:2.2rem;font-weight:800;">2+</strong><span style="font-size:.95rem;">Years of continuous learning, hands-on projects, and growing experience across software engineering, data analysis, and cybersecurity.</span></div>
+          <div class="experience-inline" style="display:flex;align-items:center;gap:14px;margin-top:20px;margin-bottom:18px;line-height:1.5;background:transparent!important;border:none!important;box-shadow:none!important;padding:0!important;"><strong style="font-size:2.2rem;font-weight:800;">2+</strong><span style="font-size:.95rem;">Years of continuous learning, hands-on projects, and growing experience across software engineering, data analysis, and cybersecurity.</span></div>
           <div class="cta-row"><a class="btn btn-primary" href="#projects">View My Work →</a><a class="btn btn-secondary" href="mailto:abada.farrag94@gmail.com">Let's Connect</a></div>
           <div class="socials"><a href="https://www.linkedin.com/in/abdulmonim-farrag-45b9a7415/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">in</a><a href="mailto:abada.farrag94@gmail.com" aria-label="Email">✉</a></div>
           <div class="scroll-cue"><i></i>Scroll to explore</div>
@@ -582,7 +587,7 @@
 
     <div class="section-divider"></div>
 
-    <section id="skills" style="display:none!important">
+    <section id="skills">
       <div class="container">
         <div class="section-head reveal from-left">
           <div class="kicker">02 — Skills</div>
@@ -609,8 +614,7 @@
             </div>
           </article>
         </div>
-        <div class="experience-strip" style="display:none!important"><div class="experience-number">2+</div><span>Years of continuous learning, hands-on projects, and growing experience across software engineering, data analysis, and cybersecurity.</span></div>
-      </div>
+        </div>
     </section>
 
     <div class="section-divider"></div>
