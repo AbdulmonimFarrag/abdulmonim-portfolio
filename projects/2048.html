@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2048 Game | Abdulmonim Farrag</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f8fafc;--surface:#fff;--surface2:#f1f5f9;--text:#0f172a;--muted:#475569;--accent:#2563eb;--border:#e2e8f0;--shadow:0 12px 35px rgba(15,23,42,.08)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif}.wrap{width:min(1060px,calc(100% - 30px));margin:auto;padding:30px 0 60px}
+.top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}h1{font-size:clamp(1.8rem,4vw,3rem);margin:0 0 8px;letter-spacing:-.04em}h2{font-size:1.15rem}p{color:var(--muted);line-height:1.65}.btn{padding:10px 14px;border:1px solid var(--border);border-radius:9px;background:var(--surface);font-weight:700;color:var(--text);text-decoration:none;cursor:pointer}.primary{background:var(--accent);color:#fff;border-color:var(--accent)}.panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);padding:24px;margin-top:22px}
+.board{font:700 1.15rem/1.7 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#0b1220;color:#e5e7eb;border-radius:12px;padding:18px;display:grid;grid-template-columns:repeat(4,minmax(50px,1fr));gap:8px;max-width:600px;margin:18px auto;white-space:pre;text-align:center}
+.cell{background:#172033;border-radius:9px;min-height:72px;display:grid;place-items:center;font-size:clamp(1rem,4vw,1.4rem)}.empty{color:transparent}.controls{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin:14px 0}.status{max-width:600px;margin:0 auto;padding:12px 14px;border:1px solid var(--border);background:var(--surface2);border-radius:10px;color:var(--muted);text-align:center}
+.source-note{margin-top:12px;color:var(--muted);font-size:.86rem}.code-wrap{margin-top:24px;background:#0b1220;border:1px solid #243247;border-radius:14px;overflow:auto;box-shadow:0 14px 40px rgba(0,0,0,.16)}.code-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 15px;background:#111827;border-bottom:1px solid #243247;color:#b6c2d1;font-size:.85rem}pre{margin:0;padding:18px;color:#e5e7eb;font:500 .88rem/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:4;white-space:pre;min-width:max-content}
+@media(max-width:680px){.top{flex-direction:column}.board{gap:6px;padding:10px}.cell{min-height:62px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <div style="color:var(--accent);font-weight:800;font-size:.85rem">SOFTWARE DEVELOPMENT • C++</div>
+      <h1>2048 Game</h1>
+      <p>A browser preview that mirrors the supplied console project: 4×4 grid, W/A/S/D controls, random 2/4 tiles, tile merging, win detection, and game-over detection.</p>
+    </div>
+    <a class="btn" href="../index.html">← Portfolio</a>
+  </div>
+
+  <div class="panel">
+    <h2>Project Preview</h2>
+    <p>Use <strong>W A S D</strong> exactly as in the original C++ program. The original source is shown below and is unchanged.</p>
+    <div id="board" class="board" aria-label="2048 board"></div>
+    <div class="controls">
+      <button class="btn" data-move="w">W ↑</button>
+      <button class="btn" data-move="a">A ←</button>
+      <button class="btn" data-move="s">S ↓</button>
+      <button class="btn" data-move="d">D →</button>
+      <button class="btn primary" id="restart">Restart</button>
+    </div>
+    <div id="status" class="status">Move (W A S D):</div>
+    <p class="source-note">The original C++ project is console-based; this preview is only a browser representation of the same core mechanics and does not claim to be the compiled C++ executable.</p>
+  </div>
+
+  <div class="panel">
+    <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
+      <div><h2 style="margin-bottom:5px">Original C++ Source</h2><p style="margin-bottom:0">Exact source supplied for the 2048 project.</p></div>
+      <a class="btn primary" href="FileName.cpp" download>Download Source</a>
+    </div>
+    <div class="code-wrap">
+      <div class="code-head"><span>FileName.cpp</span><span>C++</span></div>
+      <pre>#include &lt;iostream&gt;
+#include &lt;ctime&gt;
+using namespace std;
+
+bool AddingNewTile(int grid[4][4])
+{
+    int empty[16][2];
+    int count = 0;
+
+    for (int i = 0; i &lt; 4; i++)
+        for (int j = 0; j &lt; 4; j++)
+            if (grid[i][j] == 0)
+            {
+                empty[count][0] = i;
+                empty[count][1] = j;
+                count++;
+            }
+
+    if (count == 0) return false;
+
+    int r = rand() % count;
+    int tile = (rand() % 10 == 0) ? 4 : 2;
+    grid[empty[r][0]][empty[r][1]] = tile;
+    return true;
+}
+
+void PrintGrid(int grid[4][4])
+{
+    cout &lt;&lt; &quot;\nGrid:\n&quot;;
+    for (int i = 0; i &lt; 4; i++)
+    {
+        for (int j = 0; j &lt; 4; j++)
+            cout &lt;&lt; grid[i][j] &lt;&lt; &quot;\t&quot;;
+        cout &lt;&lt; &quot;\n&quot;;
+    }
+}
+
+bool CheckWin(int grid[4][4])
+{
+    for (int i = 0; i &lt; 4; i++)
+        for (int j = 0; j &lt; 4; j++)
+            if (grid[i][j] == 2048)
+                return true;
+    return false;
+}
+
+bool CheckGameOver(int grid[4][4])
+{
+    for (int i = 0; i &lt; 4; i++)
+        for (int j = 0; j &lt; 4; j++)
+            if (grid[i][j] == 0)
+                return false;
+
+    for (int i = 0; i &lt; 4; i++)
+        for (int j = 0; j &lt; 3; j++)
+            if (grid[i][j] == grid[i][j + 1])
+                return false;
+
+    for (int j = 0; j &lt; 4; j++)
+        for (int i = 0; i &lt; 3; i++)
+            if (grid[i][j] == grid[i + 1][j])
+                return false;
+
+    return true;
+}
+
+void reverseRow(int row[4])
+{
+    for (int i = 0; i &lt; 2; i++)
+        swap(row[i], row[3 - i]);
+}
+
+bool moveLine(int line[4])
+{
+    int old[4];
+    for (int i = 0; i &lt; 4; i++) old[i] = line[i];
+
+    int temp[4] = { 0 }, idx = 0;
+
+    for (int i = 0; i &lt; 4; i++)
+        if (line[i] != 0)
+            temp[idx++] = line[i];
+
+    for (int i = 0; i &lt; 3; i++)
+        if (temp[i] != 0 &amp;&amp; temp[i] == temp[i + 1])
+        {
+            temp[i] *= 2;
+            temp[i + 1] = 0;
+        }
+
+    int final[4] = { 0 };
+    idx = 0;
+    for (int i = 0; i &lt; 4; i++)
+        if (temp[i] != 0)
+            final[idx++] = temp[i];
+
+    for (int i = 0; i &lt; 4; i++)
+        line[i] = final[i];
+
+    for (int i = 0; i &lt; 4; i++)
+        if (old[i] != line[i])
+            return true;
+
+    return false;
+}
+
+bool moveLeft(int grid[4][4])
+{
+    bool moved = false;
+    for (int i = 0; i &lt; 4; i++)
+        if (moveLine(grid[i]))
+            moved = true;
+    return moved;
+}
+
+bool moveRight(int grid[4][4])
+{
+    bool moved = false;
+    for (int i = 0; i &lt; 4; i++)
+    {
+        reverseRow(grid[i]);
+        if (moveLine(grid[i])) moved = true;
+        reverseRow(grid[i]);
+    }
+    return moved;
+}
+
+bool moveUp(int grid[4][4])
+{
+    bool moved = false;
+    for (int col = 0; col &lt; 4; col++)
+    {
+        int line[4];
+        for (int row = 0; row &lt; 4; row++)
+            line[row] = grid[row][col];
+
+        if (moveLine(line)) moved = true;
+
+        for (int row = 0; row &lt; 4; row++)
+            grid[row][col] = line[row];
+    }
+    return moved;
+}
+
+bool moveDown(int grid[4][4])
+{
+    bool moved = false;
+    for (int col = 0; col &lt; 4; col++)
+    {
+        int line[4];
+        for (int row = 0; row &lt; 4; row++)
+            line[row] = grid[row][col];
+
+        reverseRow(line);
+        if (moveLine(line)) moved = true;
+        reverseRow(line);
+
+        for (int row = 0; row &lt; 4; row++)
+            grid[row][col] = line[row];
+    }
+    return moved;
+}
+
+int main()
+{
+    int grid[4][4] = { 0 };
+    srand(time(0));
+
+    AddingNewTile(grid);
+    AddingNewTile(grid);
+
+    char move;
+    while (true)
+    {
+        PrintGrid(grid);
+        cout &lt;&lt; &quot;\nMove (W A S D): &quot;;
+        cin &gt;&gt; move;
+
+        bool moved = false;
+
+        if (move == &#x27;a&#x27; || move == &#x27;A&#x27;) moved = moveLeft(grid);
+        else if (move == &#x27;d&#x27; || move == &#x27;D&#x27;) moved = moveRight(grid);
+        else if (move == &#x27;w&#x27; || move == &#x27;W&#x27;) moved = moveUp(grid);
+        else if (move == &#x27;s&#x27; || move == &#x27;S&#x27;) moved = moveDown(grid);
+        else
+        {
+            cout &lt;&lt; &quot;\nInvalid move!\n&quot;;
+            continue;
+        }
+
+        if (moved) AddingNewTile(grid);
+
+        if (CheckWin(grid))
+        {
+            PrintGrid(grid);
+            cout &lt;&lt; &quot;\nYOU WIN!\n&quot;;
+            break;
+        }
+
+        if (CheckGameOver(grid))
+        {
+            PrintGrid(grid);
+            cout &lt;&lt; &quot;\nGAME OVER!\n&quot;;
+            break;
+        }
+    }
+
+    return 0;
+}
+</pre>
+    </div>
+  </div>
+</div>
+<script>
+let grid = [];
+let gameEnded = false;
+
+function AddingNewTile(grid) {
+  const empty = [];
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 4; j++) {
+      if (grid[i][j] === 0) empty.push([i, j]);
+    }
+  }
+
+  if (empty.length === 0) return false;
+
+  const r = Math.floor(Math.random() * empty.length);
+  const [row, col] = empty[r];
+
+  // Matches the C++ expression: (rand() % 10 == 0) ? 4 : 2
+  const tile = Math.floor(Math.random() * 10) === 0 ? 4 : 2;
+  grid[row][col] = tile;
+  return true;
+}
+
+function PrintGrid() {
+  const board = document.getElementById("board");
+  board.innerHTML = "";
+
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 4; j++) {
+      const cell = document.createElement("div");
+      cell.className = "cell" + (grid[i][j] === 0 ? " empty" : "");
+      cell.textContent = grid[i][j];
+      board.appendChild(cell);
+    }
+  }
+}
+
+function CheckWin(grid) {
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 4; j++) {
+      if (grid[i][j] === 2048) return true;
+    }
+  }
+  return false;
+}
+
+function CheckGameOver(grid) {
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 4; j++) {
+      if (grid[i][j] === 0) return false;
+    }
+  }
+
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 3; j++) {
+      if (grid[i][j] === grid[i][j + 1]) return false;
+    }
+  }
+
+  for (let j = 0; j < 4; j++) {
+    for (let i = 0; i < 3; i++) {
+      if (grid[i][j] === grid[i + 1][j]) return false;
+    }
+  }
+
+  return true;
+}
+
+function reverseRow(row) {
+  for (let i = 0; i < 2; i++) {
+    const tmp = row[i];
+    row[i] = row[3 - i];
+    row[3 - i] = tmp;
+  }
+}
+
+function moveLine(line) {
+  const old = [...line];
+  const temp = [0, 0, 0, 0];
+  let idx = 0;
+
+  // Exact compaction stage from the supplied C++ source.
+  for (let i = 0; i < 4; i++) {
+    if (line[i] !== 0) temp[idx++] = line[i];
+  }
+
+  // Exact merge stage from the supplied C++ source.
+  for (let i = 0; i < 3; i++) {
+    if (temp[i] !== 0 && temp[i] === temp[i + 1]) {
+      temp[i] *= 2;
+      temp[i + 1] = 0;
+    }
+  }
+
+  // Exact second compaction stage.
+  const finalLine = [0, 0, 0, 0];
+  idx = 0;
+  for (let i = 0; i < 4; i++) {
+    if (temp[i] !== 0) finalLine[idx++] = temp[i];
+  }
+
+  for (let i = 0; i < 4; i++) line[i] = finalLine[i];
+
+  for (let i = 0; i < 4; i++) {
+    if (old[i] !== line[i]) return true;
+  }
+  return false;
+}
+
+function moveLeft(grid) {
+  let moved = false;
+  for (let i = 0; i < 4; i++) {
+    if (moveLine(grid[i])) moved = true;
+  }
+  return moved;
+}
+
+function moveRight(grid) {
+  let moved = false;
+  for (let i = 0; i < 4; i++) {
+    reverseRow(grid[i]);
+    if (moveLine(grid[i])) moved = true;
+    reverseRow(grid[i]);
+  }
+  return moved;
+}
+
+function moveUp(grid) {
+  let moved = false;
+
+  for (let col = 0; col < 4; col++) {
+    const line = [0, 0, 0, 0];
+
+    for (let row = 0; row < 4; row++) {
+      line[row] = grid[row][col];
+    }
+
+    if (moveLine(line)) moved = true;
+
+    for (let row = 0; row < 4; row++) {
+      grid[row][col] = line[row];
+    }
+  }
+
+  return moved;
+}
+
+function moveDown(grid) {
+  let moved = false;
+
+  for (let col = 0; col < 4; col++) {
+    const line = [0, 0, 0, 0];
+
+    for (let row = 0; row < 4; row++) {
+      line[row] = grid[row][col];
+    }
+
+    reverseRow(line);
+    if (moveLine(line)) moved = true;
+    reverseRow(line);
+
+    for (let row = 0; row < 4; row++) {
+      grid[row][col] = line[row];
+    }
+  }
+
+  return moved;
+}
+
+function updateStatus(message, state) {
+  const status = document.getElementById("status");
+  status.textContent = message;
+  status.dataset.state = state || "";
+}
+
+function newGame() {
+  grid = Array.from({ length: 4 }, () => [0, 0, 0, 0]);
+  gameEnded = false;
+
+  // Exact starting behavior: add two tiles.
+  AddingNewTile(grid);
+  AddingNewTile(grid);
+
+  updateStatus("Move (W A S D):", "");
+  PrintGrid();
+}
+
+function move(direction) {
+  // The original C++ program exits after YOU WIN or GAME OVER.
+  if (gameEnded) return;
+
+  let moved = false;
+
+  if (direction === "a") moved = moveLeft(grid);
+  else if (direction === "d") moved = moveRight(grid);
+  else if (direction === "w") moved = moveUp(grid);
+  else if (direction === "s") moved = moveDown(grid);
+  else {
+    updateStatus("Invalid move!", "invalid");
+    return;
+  }
+
+  // Exact C++ behavior: add a new tile only after a valid move.
+  if (moved) AddingNewTile(grid);
+
+  PrintGrid();
+
+  // Exact order from the C++ main loop: CheckWin first, then CheckGameOver.
+  if (CheckWin(grid)) {
+    updateStatus("YOU WIN! Press Restart to play again.", "win");
+    gameEnded = true;
+    return;
+  }
+
+  if (CheckGameOver(grid)) {
+    updateStatus("GAME OVER! Press Restart to play again.", "over");
+    gameEnded = true;
+    return;
+  }
+
+  if (!moved) {
+    updateStatus("No tile moved. Try another direction.", "invalid");
+  } else {
+    updateStatus("Move (W A S D):", "");
+  }
+}
+
+document.addEventListener("keydown", (event) => {
+  const key = event.key.toLowerCase();
+
+  if (["w", "a", "s", "d"].includes(key)) {
+    event.preventDefault();
+    move(key);
+  }
+});
+
+document.querySelectorAll("[data-move]").forEach((button) => {
+  button.addEventListener("click", () => move(button.dataset.move));
+});
+
+document.getElementById("restart").addEventListener("click", newGame);
+
+newGame();
+</script>
+</body></html>
